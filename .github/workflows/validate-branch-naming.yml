@@ -1,6 +1,6 @@
 name: Validate Branch Naming
 
-# Validates branch naming conventions for feature/fix/chore/deps/release branches
+# Validates branch naming conventions for feature/fix/chore/deps/release/maintenance branches
 # Runs only on pull requests
 on:
   pull_request:
@@ -39,6 +39,10 @@ jobs:
           elif [[ "$BRANCH_NAME" =~ ^chore/[a-z0-9-]+$ ]]; then
             VALID=true
             echo "✓ Branch name matches pattern: chore/<slug>"
+          # maintenance/<slug>
+          elif [[ "$BRANCH_NAME" =~ ^maintenance/[a-z0-9-]+$ ]]; then
+            VALID=true
+            echo "✓ Branch name matches pattern: maintenance/<slug>"
           # deps/<slug>
           elif [[ "$BRANCH_NAME" =~ ^deps/[a-z0-9-]+$ ]]; then
             VALID=true
@@ -56,6 +60,7 @@ jobs:
             echo "  - feature/<slug>     (e.g., feature/new-player-ui)"
             echo "  - fix/<slug>         (e.g., fix/youtube-oauth)"
             echo "  - chore/<slug>       (e.g., chore/update-dependencies)"
+            echo "  - maintenance/<slug> (e.g., maintenance/current-fixes)"
             echo "  - deps/<slug>       (e.g., deps/youtube-source-pr195)"
             echo "  - release/<version>  (e.g., release/0.6.3 or release/0.6.3-rc1)"
             echo ""
