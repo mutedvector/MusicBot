@@ -5,14 +5,14 @@
 > This is a fork of [JMusicBot](https://github.com/jagrosh/MusicBot) from jagrosh
 > I started this because it was not maintained and was not working anymore.
 
-[![Downloads](https://img.shields.io/github/downloads/arif-banai/MusicBot/total.svg)](https://github.com/arif-banai/MusicBot/releases/latest)
-[![Stars](https://img.shields.io/github/stars/arif-banai/MusicBot.svg)](https://github.com/arif-banai/MusicBot/stargazers)
-[![Release](https://img.shields.io/github/release/arif-banai/MusicBot.svg)](https://github.com/arif-banai/MusicBot/releases/latest)
-[![License](https://img.shields.io/github/license/arif-banai/MusicBot.svg)](https://github.com/arif-banai/MusicBot/blob/master/LICENSE)
+[![Downloads](https://img.shields.io/github/downloads/mutedvector/MusicBot/total.svg)](https://github.com/mutedvector/MusicBot/releases/latest)
+[![Stars](https://img.shields.io/github/stars/mutedvector/MusicBot.svg)](https://github.com/mutedvector/MusicBot/stargazers)
+[![Release](https://img.shields.io/github/release/mutedvector/MusicBot.svg)](https://github.com/mutedvector/MusicBot/releases/latest)
+[![License](https://img.shields.io/github/license/mutedvector/MusicBot.svg)](https://github.com/mutedvector/MusicBot/blob/master/LICENSE)
 [![Discord](https://discordapp.com/api/guilds/1453856673004392634/widget.png?v=1)](https://discord.gg/cyyUxNmmx6) <br>
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/arif-banai/MusicBot/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/arif-banai/MusicBot/tree/master)
-[![Build and Test](https://github.com/arif-banai/MusicBot/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/arif-banai/MusicBot/actions/workflows/build-and-test.yml)
-[![CodeFactor](https://www.codefactor.io/repository/github/arif-banai/musicbot/badge)](https://www.codefactor.io/repository/github/arif-banai/musicbot)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/mutedvector/MusicBot/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/mutedvector/MusicBot/tree/master)
+[![Build and Test](https://github.com/mutedvector/MusicBot/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/mutedvector/MusicBot/actions/workflows/build-and-test.yml)
+[![CodeFactor](https://www.codefactor.io/repository/github/mutedvector/musicbot/badge)](https://www.codefactor.io/repository/github/mutedvector/musicbot)
 
 A cross-platform Discord music bot with a clean interface, and that is easy to set up and run yourself!
 
@@ -28,7 +28,7 @@ This version of JMusicBot changes/updates various dependencies. To ensure your b
     *   *Without this, the bot will not see your commands.*
 
 
-[![Setup](http://i.imgur.com/VvXYp5j.png)](https://jmusicbot.com/setup)
+[![Setup](http://i.imgur.com/VvXYp5j.png)](https://github.com/mutedvector/MusicBot#setup)
 
 ## Features
   * Easy to run (just make sure Java is installed, and run!)
@@ -66,7 +66,10 @@ JMusicBot supports all sources and formats supported by [lavaplayer](https://git
 ![Loading Example...](https://i.imgur.com/kVtTKvS.gif)
 
 ## Setup
-Please see the [Setup Page](https://jmusicbot.com/setup) to run this bot yourself!
+1. Download the latest JAR from the [Releases](https://github.com/mutedvector/MusicBot/releases/latest) page.
+2. Put the JAR in its own folder and run it once. The bot will create `config.txt` if it does not exist.
+3. Open `config.txt` and set your Discord bot token and owner ID.
+4. Start the bot again. For Windows PowerShell and Docker examples, see the sections below.
 
 ## Running Directly (Without Docker)
 
@@ -74,12 +77,12 @@ When running JMusicBot directly (not in Docker), make sure to pass these JVM fla
 
 **Linux / macOS / Windows (CMD):**
 ```bash
-java -Dfile.encoding=UTF-8 -Dnogui=true --enable-native-access=ALL-UNNAMED -jar JMusicBot-0.6.2-All.jar
+java -Dfile.encoding=UTF-8 -Dnogui=true --enable-native-access=ALL-UNNAMED -jar JMusicBot-0.7.1.jar
 ```
 
 **Windows (PowerShell):** PowerShell treats `-D` as its own parameter. Quote each JVM option so they are passed to `java` correctly:
 ```powershell
-java "-Dfile.encoding=UTF-8" "-Dnogui=true" "--enable-native-access=ALL-UNNAMED" "-jar" ".\JMusicBot-0.6.2-All.jar"
+java "-Dfile.encoding=UTF-8" "-Dnogui=true" "--enable-native-access=ALL-UNNAMED" "-jar" ".\JMusicBot-0.7.1.jar"
 ```
 Alternatively, use the stop-parsing token so the rest of the line is passed literally: `java --% -Dfile.encoding=UTF-8 -Dnogui=true ...`
 
@@ -121,7 +124,7 @@ If you already have a directory with your `config.txt`, `Playlists/` folder, and
 docker run --rm -it \
   --name jmusicbot \
   -v "$(pwd):/musicbot" \
-  ghcr.io/arif-banai/musicbot:latest
+  ghcr.io/mutedvector/musicbot:latest
 ```
 
 This mounts your current directory as the musicbot volume, so the bot will use your existing configuration and playlists.
@@ -135,7 +138,7 @@ This mounts your current directory as the musicbot volume, so the bot will use y
    docker run --rm -it \
      --name jmusicbot \
      -v "/path/to/musicbot:/musicbot" \
-     ghcr.io/arif-banai/musicbot:latest
+     ghcr.io/mutedvector/musicbot:latest
    ```
 
 2. **First Run:**
@@ -158,7 +161,7 @@ Example `docker-compose.yml`:
 ```yaml
 services:
   jmusicbot:
-    image: ghcr.io/arif-banai/musicbot:latest
+    image: ghcr.io/mutedvector/musicbot:latest
     container_name: jmusicbot
     volumes:
       - /path/to/musicbot:/musicbot
@@ -172,13 +175,13 @@ Check the [Docker Compose Example](docker-compose.example.yml) for more details.
 - **Config Persistence:** The `/musicbot` volume **must** be mounted for your configuration to persist. The bot reads and writes `config.txt` from `/musicbot` (the container's working directory).
 - **First Run:** If `config.txt` doesn't exist, the bot will generate a default one automatically. You'll need to edit it with your bot token before the bot can start.
 - **Image Tags:** 
-  - Use `ghcr.io/arif-banai/musicbot:latest` for the latest build from the master branch
-  - Use `ghcr.io/arif-banai/musicbot:0.6.1` (replace with actual version) to pin a specific release version
+  - Use `ghcr.io/mutedvector/musicbot:latest` for the latest build from the master branch
+  - Use `ghcr.io/mutedvector/musicbot:0.7.1` to pin this release version
   - **Recommendation:** For production, pin your image tag rather than using `latest`
 - **JAVA_OPTS:** The container uses ZGC and AlwaysPreTouch by default. Set `JAVA_OPTS` to add heap limits (e.g. `-Xms256m -Xmx512m`) or other flags. See [Performance Tuning](#performance-tuning) for details.
 
 
-To view published images, visit: `https://github.com/arif-banai/MusicBot/pkgs/container/musicbot`
+To view published images, visit the [published container images](https://github.com/mutedvector/MusicBot/pkgs/container/musicbot).
 
 ## Performance Tuning
 
@@ -289,13 +292,13 @@ This project follows a **trunk-based development** workflow. The `master` branch
 Branch names are automatically validated by CI to ensure consistency. For detailed information about the development workflow, branch naming rules, and best practices, see [DEVELOPMENT_WORKFLOW.md](docs/DEVELOPMENT_WORKFLOW.md).
 
 ## Questions/Suggestions/Bug Reports
-**Please read the [Issues List](https://github.com/arif-banai/MusicBot/issues) before suggesting a feature**. 
+**Please read the [Issues List](https://github.com/mutedvector/MusicBot/issues) before suggesting a feature**.
 
-If you have a question, need troubleshooting help, or want to brainstorm a new feature, please start a [Discussion](https://github.com/arif-banai/MusicBot/discussions).
+If you have a question, need troubleshooting help, or want to brainstorm a new feature, please start a [Discussion](https://github.com/mutedvector/MusicBot/discussions).
 
 The Discord server is also available for questions and suggestions. [Click here to join](https://discord.gg/cyyUxNmmx6).
 
- If you'd like to suggest a feature or report a reproducible bug, please open an [Issue](https://github.com/arif-banai/MusicBot/issues) on this repository. If you like this bot, be sure to add a star to the libraries that make this possible: 
+ If you'd like to suggest a feature or report a reproducible bug, please open an [Issue](https://github.com/mutedvector/MusicBot/issues) on this repository. If you like this bot, be sure to add a star to the libraries that make this possible:
  - [**JDA**](https://github.com/DV8FromTheWorld/JDA)
  - [**lavaplayer**](https://github.com/lavalink-devs/lavaplayer)
  - [**youtube-source**](https://github.com/lavalink-devs/youtube-source)

@@ -148,6 +148,6 @@ jobs:
             
             ---
             ### Setup
-            https://jmusicbot.com/setup  
-            https://jmusicbot.com/config  
-            # Download: [JMusicBot-${{ github.event.inputs.version_number }}.jar](${{ github.server_url }}/${{ github.repository }}/releases/download/v${{ github.event.inputs.version_number }}/JMusicBot-${{ github.event.inputs.version_number }}.jar)
+            See the [setup instructions in the README](${{ github.server_url }}/${{ github.repository }}#setup).
+
+            Download: [JMusicBot-${{ github.event.inputs.version_number }}.jar](${{ github.server_url }}/${{ github.repository }}/releases/download/v${{ github.event.inputs.version_number }}/JMusicBot-${{ github.event.inputs.version_number }}.jar)
