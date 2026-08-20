@@ -20,6 +20,9 @@ import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.audio.QueuedTrack;
 import com.jagrosh.jmusicbot.settings.QueueType;
 import com.jagrosh.jmusicbot.settings.RepeatMode;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
@@ -338,6 +341,44 @@ public class AudioHandlerTest extends TestBase {
         public void testSetLastReason() {
             // Just verify it doesn't throw
             assertDoesNotThrow(() -> audioHandler.setLastReason("Test reason"));
+        }
+    }
+
+    @Nested
+    @DisplayName("Initial YouTube Playback Retry")
+    class InitialYoutubePlaybackRetryTests
+    {
+        @Test
+        @DisplayName("retries an initial all-client YouTube failure once")
+        void retriesInitialYoutubeFailureOnce()
+        {
+            AudioTrack failedTrack = mock(AudioTrack.class);
+            AudioTrack retryTrack = mock(AudioTrack.class);
+            AudioSourceManager sourceManager = mock(AudioSourceManager.class);
+            AudioTrackInfo info = new AudioTrackInfo(
+                    "Long YouTube Track",
+                    "Author",
+                    36_000_000L,
+                    "youtube-long-track",
+                    false,
+                    "https://www.youtube.com/watch?v=58YjsK8NYPE");
+            FriendlyException exception = new FriendlyException(
+                    "(yts.version: test) All clients failed to load the item.",
+                    Severity.SUSPICIOUS,
+                    null);
+
+            when(failedTrack.getInfo()).thenReturn(info);
+            when(failedTrack.getIdentifier()).thenReturn(info.identifier);
+            when(failedTrack.getPosition()).thenReturn(0L);
+            when(failedTrack.getSourceManager()).thenReturn(sourceManager);
+            when(failedTrack.makeClone()).thenReturn(retryTrack);
+            when(sourceManager.getSourceName()).thenReturn("youtube");
+
+            audioHandler.onTrackException(audioPlayer, failedTrack, exception);
+            audioHandler.onTrackException(audioPlayer, failedTrack, exception);
+
+            verify(audioPlayer, times(1)).playTrack(retryTrack);
+            verify(failedTrack, times(1)).makeClone();
         }
     }
 

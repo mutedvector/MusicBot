@@ -23,6 +23,7 @@ import com.jagrosh.jmusicbot.settings.Settings;
 import com.jagrosh.jmusicbot.utils.MessageFormatter;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
@@ -40,6 +41,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -54,6 +56,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
     private final static Logger LOGGER = LoggerFactory.getLogger(AudioHandler.class);
     private final List<AudioTrack> defaultQueue = new LinkedList<>();
     private final Set<String> votes = new HashSet<>();
+    private final Set<String> retriedInitialYoutubePlayback = ConcurrentHashMap.newKeySet();
     
     private final PlayerManager manager;
     private final AudioPlayer audioPlayer;
@@ -141,6 +144,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
         LOGGER.debug("Stopping and clearing queue");
         queue.clearAll();
         defaultQueue.clear();
+        retriedInitialYoutubePlayback.clear();
         audioPlayer.stopTrack();
         //current = null;
     }
@@ -154,6 +158,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
         LOGGER.debug("Stopping playback and clearing queue (preserving history)");
         queue.clear();
         defaultQueue.clear();
+        retriedInitialYoutubePlayback.clear();
         audioPlayer.stopTrack();
     }
 
@@ -285,6 +290,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
             trackUri = track.getInfo().uri;
         }
         metricsListener.onTrackException(trackTitle, trackUri);
+
+        if (retryInitialYoutubePlayback(player, track, exception))
+            return;
         
         // Build detailed error message with track information
         StringBuilder errorDetails = new StringBuilder();
@@ -343,6 +351,48 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
         else {
             LOGGER.error("Track {} has failed to play\n{}", track.getIdentifier(), errorDetails.toString(), exception);
         }
+    }
+
+    /**
+     * Retries an initial YouTube load failure once. YouTube can return a
+     * transient all-clients failure while its stream formats are changing or
+     * while one of the selected media hosts is unavailable. Retrying only at
+     * position zero and only once avoids masking failures after playback has
+     * already started or creating a retry loop.
+     */
+    private boolean retryInitialYoutubePlayback(AudioPlayer player, AudioTrack track, FriendlyException exception)
+    {
+        if (track == null || exception == null || track.getPosition() > 0)
+            return false;
+
+        AudioSourceManager sourceManager = track.getSourceManager();
+        if (sourceManager == null || !"youtube".equalsIgnoreCase(sourceManager.getSourceName()))
+            return false;
+
+        String message = exception.getMessage();
+        if (message == null || !message.contains("All clients failed to load the item"))
+            return false;
+
+        String identifier = track.getIdentifier();
+        if (identifier == null)
+            return false;
+
+        if (!retriedInitialYoutubePlayback.add(identifier))
+        {
+            retriedInitialYoutubePlayback.remove(identifier);
+            return false;
+        }
+
+        AudioTrack retryTrack = track.makeClone();
+        if (retryTrack == null)
+        {
+            retriedInitialYoutubePlayback.remove(identifier);
+            return false;
+        }
+
+        LOGGER.warn("Initial YouTube playback failed for {}; retrying once.", identifier);
+        player.playTrack(retryTrack);
+        return true;
     }
 
     @Override
@@ -489,6 +539,13 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
         long startNanos = System.nanoTime();
         lastFrame = audioPlayer.provide();
         long latencyNanos = System.nanoTime() - startNanos;
+
+        if (lastFrame != null)
+        {
+            AudioTrack currentTrack = audioPlayer.getPlayingTrack();
+            if (currentTrack != null && currentTrack.getIdentifier() != null)
+                retriedInitialYoutubePlayback.remove(currentTrack.getIdentifier());
+        }
         
         boolean frameAvailable = lastFrame != null;
         metricsListener.onFrameProvided(frameAvailable, latencyNanos);
